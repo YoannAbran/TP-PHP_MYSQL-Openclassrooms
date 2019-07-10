@@ -1,8 +1,9 @@
 <?php
+setcookie('pseudo', $_POST['pseudo'], time()+3600*24*365, 'null, null, false, true');
 /*connection bdd*/
 try
 {
-	$bdd = new PDO('mysql:host=localhost;dbname=minichat;charset=utf8', 'root', '');
+	$bdd = new PDO('mysql:host=localhost;dbname=minichat2;charset=utf8', 'root', '');
 }
 catch(Exception $e)
 {
@@ -10,19 +11,20 @@ catch(Exception $e)
 }
 
 /*insertion du message*/
+if (!empty($_POST['pseudo'] && !empty($_POST['message'])))
+{   
+    
+    $req = $bdd->prepare('INSERT INTO minichat (pseudo, message) VALUES(?, ?)');
+    $req->execute(array($_POST['pseudo'], $_POST['message']));
+      
 
-$sql = "INSERT INTO pseudo (nom) VALUES (?)";
-    $q = $bdd->prepare($sql);
-    $q ->execute(array($_POST['nom']));
+}
+else
+{
+    echo 'Veuillez remplir tous les champs SVP';
+    echo '<br /><a href="minichat.php">Retour au minichat</a>';
+}
 
-    $Last_ID = $bdd->lastInsertId();
-
-    $sql_table2 = "INSERT INTO messages (id_pseudo,mes) 
-                   VALUES (?) ";
-    $q = $bdd->prepare($sql_table2);
-    $q -> execute(array($Last_ID,$_POST['mes']));
-
-   
 
 /*redirection*/
 header('Location: minichat.php');

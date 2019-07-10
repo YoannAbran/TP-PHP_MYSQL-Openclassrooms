@@ -9,8 +9,8 @@
         
     <form action="minichat_post.php" method="post">
         <p>
-        <label for="nom">Pseudo</label> : <input type="text" name="nom" id="nom" /><br />
-        <label for="mes">Message</label> :  <input type="text" name="mes" id="mes" /><br />
+        <label for="pseudo">Pseudo</label> : <input type="text" name="pseudo" id="pseudo" value="<?php echo $_COOKIE['pseudo']; ?>" /><br/>
+        <label for="message">Message</label> :  <input type="text" name="message" id="message" /><br />
 
         <input type="submit" value="Envoyer" />
 	</p>
@@ -20,7 +20,7 @@
 /*connexion bdd*/
 try
 {
-	$bdd = new PDO('mysql:host=localhost;dbname=minichat;charset=utf8', 'root', '');
+	$bdd = new PDO('mysql:host=localhost;dbname=minichat2;charset=utf8', 'root', '');
 }
 catch(Exception $e)
 {
@@ -28,17 +28,16 @@ catch(Exception $e)
 }
 
 /*message afficher*/
+    
 $reponse = $bdd->query('
-SELECT p.nom, m.mes, m.date_mes
-FROM pseudo p
-INNER JOIN messages m
-ON m.id_pseudo = p.id
-ORDER BY m.date_mes DESC LIMIT 0, 10');
+SELECT pseudo, message, DATE_FORMAT(date_mes, \'%d/%m/%Y %Hh%imin%ss\') AS date
+FROM minichat
+ORDER BY date_mes DESC LIMIT 0, 10');
 
 
 while ($donnees = $reponse->fetch())
 {
-	echo '<p>' .htmlspecialchars($donnees['date_mes']).' '. '<strong>' .htmlspecialchars($donnees['nom']).'</strong>' . ' : ' . htmlspecialchars($donnees['mes']) . '</p>';
+	echo '<p>' .htmlspecialchars($donnees['date']).' '. '<strong>' .htmlspecialchars($donnees['pseudo']).'</strong>' . ' : ' . htmlspecialchars($donnees['message']) . '</p>';
 }
 
 $reponse->closeCursor();
